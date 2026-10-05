@@ -1,0 +1,14 @@
+services:
+  app:
+    build:
+      context: .
+      target: dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - uploads-data:/app/uploads
+
+volumes:
+  uploads-data:
