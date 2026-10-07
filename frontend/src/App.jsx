@@ -13,6 +13,8 @@ function App() {
 
   useEffect(load, []);
 
+  const count = notes.length;
+
   function submit(event) {
     event.preventDefault();
 
@@ -33,6 +35,7 @@ function App() {
   return (
     <div>
       <h1>My notes</h1>
+      <p>{count} notes</p>
 
       <form onSubmit={submit}>
         <input
@@ -57,3 +60,5 @@ function App() {
 }
 
 export default App;
+
+// test
