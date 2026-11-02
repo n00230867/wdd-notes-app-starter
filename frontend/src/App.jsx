@@ -32,6 +32,13 @@ function App() {
     });
   }
 
+  function remove(noteId) {
+    fetch(`/api/notes/${noteId}`, { method: "DELETE" }).then((res) => {
+      if (!res.ok) throw new Error("Could not delete note");
+      load();
+    });
+  }
+
   return (
     <div>
       <h1>Notes TEST MY Own</h1>
@@ -52,6 +59,9 @@ function App() {
           <li key={note.id}>
             {note.text}
             {note.url && <a href={note.url}> (attachment)</a>}
+            <button type="button" onClick={() => remove(note.id)}>
+              Delete
+            </button>
           </li>
         ))}
       </ul>

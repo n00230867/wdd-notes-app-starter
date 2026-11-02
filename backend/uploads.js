@@ -4,14 +4,18 @@
 // are written to backend/uploads instead.
 //
 
-import { mkdirSync } from "node:fs";
+import { mkdirSync, unlink } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomUUID } from "node:crypto";
 
 import multer from "multer";
 import multerS3 from "multer-s3";
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -77,4 +81,26 @@ export async function getFileUrl(filename) {
     new GetObjectCommand({ Bucket: process.env.S3_BUCKET, Key: filename }),
     { expiresIn: URL_LIFETIME },
   );
+}
+
+export async function deleteFile(filename) {
+  if (!filename) return;
+
+  if (usingS3) {
+    await s3.send(
+      new DeleteObjectCommand({
+        Bucket: process.env.S3_BUCKET,
+        Key: filename,
+      }),
+    );
+    return;
+  }
+
+  await new Promise((resolve, reject) => {
+    unlink(path.join(uploadsDir, filename), (error) => {
+      if (error?.code === "ENOENT") resolve();
+      else if (error) reject(error);
+      else resolve();
+    });
+  });
 }

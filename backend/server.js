@@ -1,7 +1,13 @@
 import "dotenv/config";
 import express from "express";
 
-import { upload, getFileUrl, usingS3, uploadsDir } from "./uploads.js";
+import {
+  deleteFile,
+  getFileUrl,
+  upload,
+  usingS3,
+  uploadsDir,
+} from "./uploads.js";
 
 const port = process.env.PORT || 8080;
 
@@ -51,6 +57,21 @@ app.post("/api/notes", upload.single("file"), (req, res) => {
   notes.push(note);
 
   res.status(201).json(note);
+});
+
+app.delete("/api/notes/:id", async (req, res) => {
+  const noteIndex = notes.findIndex(
+    (note) => note.id === Number(req.params.id),
+  );
+
+  if (noteIndex === -1) {
+    return res.status(404).json({ error: "Note not found" });
+  }
+
+  const [note] = notes.splice(noteIndex, 1);
+  await deleteFile(note.attachment);
+
+  res.sendStatus(204);
 });
 
 app.listen(port, () => {
