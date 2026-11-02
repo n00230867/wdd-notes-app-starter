@@ -60,7 +60,9 @@ app.post("/api/notes", upload.single("file"), (req, res) => {
 });
 
 app.delete("/api/notes/:id", async (req, res) => {
-  const noteIndex = notes.findIndex((note) => note.id === Number(req.params.id));
+  const noteIndex = notes.findIndex(
+    (note) => note.id === Number(req.params.id),
+  );
 
   if (noteIndex === -1) {
     return res.status(404).json({ error: "Note not found" });
@@ -71,7 +73,6 @@ app.delete("/api/notes/:id", async (req, res) => {
 
   res.sendStatus(204);
 });
-
 
 app.listen(port, () => {
   console.log(`Listening on http://localhost:${port}`);
